@@ -1,0 +1,6 @@
+{
+	"ID"	: "wall",
+	"Name"	: "Wall",
+	"Image" : "floors_0",
+	"SpawnPellet" : false
+}

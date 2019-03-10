@@ -1,0 +1,5 @@
+{
+    "ID"    : "floor",
+    "Name"  : "Floor",
+    "Image" : "floors_1"
+}

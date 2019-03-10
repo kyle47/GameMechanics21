@@ -1,0 +1,6 @@
+{
+    "ID"    : "wall-top",
+    "Name"  : "Wall",
+    "Image" : "walls_4",
+	"SpawnPellet" : false
+}
