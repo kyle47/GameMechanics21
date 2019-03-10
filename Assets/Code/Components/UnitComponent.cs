@@ -13,7 +13,7 @@ namespace Game.Components
     {
         protected const float SNAP_DELTA = .05f;
 
-        public Rigidbody2D Rigidbody2D;
+        public Rigidbody Rigidbody;
 
         protected Vector3 _targetPosition;
         protected bool _moving;
@@ -33,13 +33,13 @@ namespace Game.Components
             if (_moving)
             {
                 var direction = (_targetPosition - gameObject.transform.position).normalized;
-                Rigidbody2D.velocity = direction.normalized * _unit.Speed;
+                Rigidbody.velocity = direction.normalized * _unit.Speed;
 
-                _moving = Vector2.Distance(gameObject.transform.position, _targetPosition) > SNAP_DELTA;
+                _moving = Vector3.Distance(gameObject.transform.position, _targetPosition) > SNAP_DELTA;
                 if (_moving == false)
                 {
                     gameObject.transform.position = _targetPosition;
-                    Rigidbody2D.velocity = Vector2.zero;
+                    Rigidbody.velocity = Vector2.zero;
                     _unit.OnMovementDone();
                 }
             }
@@ -49,8 +49,8 @@ namespace Game.Components
         {
             _targetPosition = new Vector3(
                 x,
-                y,
-                gameObject.transform.position.z
+                gameObject.transform.position.y,
+                y
             );
             _moving = true;
         }

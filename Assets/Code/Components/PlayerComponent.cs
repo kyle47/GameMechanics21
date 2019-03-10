@@ -9,7 +9,7 @@ namespace Game.Components
 {
     public class PlayerComponent : MonoBehaviour
     {
-        private void OnTriggerEnter2D(Collider2D other)
+        private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Pellet"))
             {

@@ -15,10 +15,17 @@ namespace Game.Components
 {
     public class MapComponent : MonoBehaviour
     {
+        protected const int MAP_WIDTH = 7;
+        protected const int MAP_HEIGHT = 5;
+
         protected Map _map;
         protected TileFactory _tileFactory;
 
+        // TEMPORARY: Load from Resources
         public GameObject PelletPrefab;
+
+        // TEMPORARY: Load correct map from Resources
+        public GameObject MapPrefab;
 
         [Inject]
         public void Construct(TileFactory tileFactory)
@@ -28,38 +35,36 @@ namespace Game.Components
 
         private void Start()
         {
-            var floor = _tileFactory.Tiles["floor"];
-            var map = new Map(13, 7, floor);
+            var mapObject = GameObject.Instantiate(MapPrefab, Vector3.zero, Quaternion.identity);
+            var tileHolder = mapObject.transform.Find("tiles");
 
-            for (int x = 0; x < map.Width; x++)
+            var locationToGameObject = new Dictionary<string, GameObject>();
+
+            foreach(Transform tileTransform in tileHolder)
             {
-                var wall = _tileFactory.Tiles["wall"];
-                var wallTop = _tileFactory.Tiles["wall-top"];
+                var x = (int)Mathf.Round(tileTransform.localPosition.x) + (MAP_WIDTH / 2);
+                var z = (int)Mathf.Round(tileTransform.localPosition.z) + (MAP_HEIGHT / 2);
 
-                map.SetTile(x, 6, wallTop);
-                map.SetTile(x, 5, wall);
+                locationToGameObject.Add($"{x}:{z}", tileTransform.gameObject);
             }
 
-            LoadMap(map);
+            var map = new Map(MAP_WIDTH, MAP_HEIGHT, null);
+
+            LoadMap(map, locationToGameObject);
         }
 
-        public void LoadMap(Map map)
+        public void LoadMap(Map map, Dictionary<string, GameObject> locationToGameObject)
         {
             _map = map;
-            map.ForEachTile((x, y, tile) =>
+            map.ForEachTile((x, z, tile) =>
             {
-                var tileObject = _tileFactory.Create(tile.ID);
+                var tileObject = locationToGameObject[$"{x}:{z}"];
+                var newTile = _tileFactory.Tiles[tileObject.name];
+                _map.SetTile(x, z, newTile);
 
-                tileObject.transform.localScale = Vector3.one;
-                tileObject.transform.localPosition = new Vector3(
-                    x - (_map.Width / 2),
-                    y - (_map.Height / 2),
-                    gameObject.transform.position.z
-                );
-
-                if(tile.SpawnPellet)
+                if (newTile.SpawnPellet)
                 {
-                    GameObject.Instantiate(PelletPrefab, tileObject.transform.position, Quaternion.identity);
+                    var pelletObject = GameObject.Instantiate(PelletPrefab, tileObject.transform.position, Quaternion.identity);
                 }
             });
         }
